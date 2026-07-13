@@ -6,7 +6,7 @@ import 'package:notes_app_flutter/services/api_client.dart';
 
 class NoteService {
   final ApiClient _apiClient;
-  final String authToken;
+  String? authToken;
 
   NoteService({required ApiClient apiClient, required this.authToken}) : _apiClient = apiClient;
 

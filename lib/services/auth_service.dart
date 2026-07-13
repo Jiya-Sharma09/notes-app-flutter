@@ -14,7 +14,7 @@ class AuthService {
     required String password,
   }) async {
     final response = await _apiClient.post(
-      '/signup',
+      '/auth/register',
       body: jsonEncode({
         'name': name,
         'email': email,
@@ -35,7 +35,7 @@ class AuthService {
     required String password,
   }) async {
     final response = await _apiClient.post(
-      '/login',
+      '/auth/login',
       body: jsonEncode({
         'email': email,
         'password': password,
