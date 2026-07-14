@@ -13,24 +13,27 @@ class AuthService {
     required String email,
     required String password,
   }) async {
-    final response = await _apiClient.post(
-      '/auth/register',
-      body: jsonEncode({
-        'name': name,
-        'email': email,
-        'password': password,
-      }),
-    );
+    http.Response response;
+    try {
+      response = await _apiClient.post(
+        '/auth/register',
+        body: jsonEncode({'name': name, 'email': email, 'password': password}),
+      );
+    } catch (e) {
+      throw AuthException('Failed to connect to the server');
+    }
 
     if (response.statusCode != 201 && response.statusCode != 200) {
-      throw AuthException(_parseError(response), statusCode: response.statusCode);
+      throw AuthException(
+        _parseError(response),
+        statusCode: response.statusCode,
+      );
     }
 
     Map<String, dynamic> data;
-    try{
-       data = jsonDecode(response.body) as Map<String, dynamic>;
-      
-    }catch(_){
+    try {
+      data = jsonDecode(response.body) as Map<String, dynamic>;
+    } catch (_) {
       throw AuthException('Invalid response format from server.');
     }
     return _extractToken(data);
@@ -40,23 +43,27 @@ class AuthService {
     required String email,
     required String password,
   }) async {
-    final response = await _apiClient.post(
-      '/auth/login',
-      body: jsonEncode({
-        'email': email,
-        'password': password,
-      }),
-    );
+    http.Response response;
+    try {
+      response = await _apiClient.post(
+        '/auth/login',
+        body: jsonEncode({'email': email, 'password': password}),
+      );
+    } catch (e) {
+      throw AuthException('Failed to connect to the server');
+    }
 
     if (response.statusCode != 200) {
-      throw AuthException(_parseError(response), statusCode: response.statusCode);
+      throw AuthException(
+        _parseError(response),
+        statusCode: response.statusCode,
+      );
     }
 
     Map<String, dynamic> data;
-    try{
-       data = jsonDecode(response.body) as Map<String, dynamic>;
-      
-    }catch(_){
+    try {
+      data = jsonDecode(response.body) as Map<String, dynamic>;
+    } catch (_) {
       throw AuthException('Invalid response format from server.');
     }
     return _extractToken(data);
@@ -72,8 +79,11 @@ class AuthService {
 
   String _parseError(http.Response response) {
     try {
-      final Map<String, dynamic> json = jsonDecode(response.body) as Map<String, dynamic>;
-      return json['message']?.toString() ?? response.reasonPhrase ?? 'Unknown auth error';
+      final Map<String, dynamic> json =
+          jsonDecode(response.body) as Map<String, dynamic>;
+      return json['message']?.toString() ??
+          response.reasonPhrase ??
+          'Unknown auth error';
     } catch (_) {
       return response.reasonPhrase ?? 'Unknown auth error';
     }
