@@ -23,7 +23,7 @@ class AuthService {
     );
 
     if (response.statusCode != 201 && response.statusCode != 200) {
-      throw AuthException(_parseError(response));
+      throw AuthException(_parseError(response), statusCode: response.statusCode);
     }
 
     final data = jsonDecode(response.body) as Map<String, dynamic>;
@@ -43,7 +43,7 @@ class AuthService {
     );
 
     if (response.statusCode != 200) {
-      throw AuthException(_parseError(response));
+      throw AuthException(_parseError(response), statusCode: response.statusCode);
     }
 
     final data = jsonDecode(response.body) as Map<String, dynamic>;
@@ -70,8 +70,9 @@ class AuthService {
 
 class AuthException implements Exception {
   final String message;
-  AuthException(this.message);
+  final int? statusCode;
+  AuthException(this.message, {this.statusCode});
 
   @override
-  String toString() => 'AuthException: $message';
+  String toString() => 'AuthException $statusCode: $message';
 }

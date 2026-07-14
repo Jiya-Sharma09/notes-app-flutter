@@ -89,13 +89,13 @@ class NoteService {
 
   void _assertResponseOk(http.Response response) {
     if (response.statusCode != 200) {
-      throw ApiException(_parseError(response));
+      throw ApiException(_parseError(response), statusCode: response.statusCode);
     }
   }
 
   void _assertResponseCreated(http.Response response) {
     if (response.statusCode != 201) {
-      throw ApiException(_parseError(response));
+      throw ApiException(_parseError(response), statusCode: response.statusCode);
     }
   }
 
@@ -111,8 +111,9 @@ class NoteService {
 
 class ApiException implements Exception {
   final String message;
-  ApiException(this.message);
+  final int? statusCode;
+  ApiException(this.message, {this.statusCode});
 
   @override
-  String toString() => 'ApiException: $message';
+  String toString() => 'ApiException $statusCode: $message';
 }
