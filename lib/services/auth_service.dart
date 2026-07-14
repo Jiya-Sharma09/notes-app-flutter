@@ -23,7 +23,7 @@ class AuthService {
       throw AuthException('Failed to connect to the server');
     }
 
-    if (response.statusCode != 201 && response.statusCode != 200) {
+    if (response.statusCode != 201) {
       throw AuthException(
         _parseError(response),
         statusCode: response.statusCode,
