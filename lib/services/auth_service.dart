@@ -26,7 +26,13 @@ class AuthService {
       throw AuthException(_parseError(response), statusCode: response.statusCode);
     }
 
-    final data = jsonDecode(response.body) as Map<String, dynamic>;
+    Map<String, dynamic> data;
+    try{
+       data = jsonDecode(response.body) as Map<String, dynamic>;
+      
+    }catch(_){
+      throw AuthException('Invalid response format from server.');
+    }
     return _extractToken(data);
   }
 
@@ -46,7 +52,13 @@ class AuthService {
       throw AuthException(_parseError(response), statusCode: response.statusCode);
     }
 
-    final data = jsonDecode(response.body) as Map<String, dynamic>;
+    Map<String, dynamic> data;
+    try{
+       data = jsonDecode(response.body) as Map<String, dynamic>;
+      
+    }catch(_){
+      throw AuthException('Invalid response format from server.');
+    }
     return _extractToken(data);
   }
 
