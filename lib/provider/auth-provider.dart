@@ -7,30 +7,38 @@ import 'package:flutter/foundation.dart';
 class AuthProvider extends ChangeNotifier {
   String baseURL = "";
   final storage = FlutterSecureStorage();
-  late final ApiClient _client = ApiClient(baseUrl:baseURL);
-  late final AuthService  _authService = AuthService(_client);
+  late final ApiClient _client = ApiClient(baseUrl: baseURL);
+  late final AuthService _authService = AuthService(_client);
   String? _token;
 
   AuthProvider();
 
   String? get token => _token;
-  
-  Future<void> login({required String email, required String password})async
-  {
-    
+
+  Future<void> login({required String email, required String password}) async {
     try {
-       _token = await _authService.login(email: email, password: password);
+      _token = await _authService.login(email: email, password: password);
     } catch (e) {
       throw Exception('Login failed: $e');
-      
     }
-    
-    try{
+
+    try {
       await storage.write(key: "token", value: _token);
-    }catch(e){
+    } catch (e) {
+      _token = null;
       throw Exception('Failed to store token: $e');
     }
-    
+
+    notifyListeners();
+  }
+
+  Future<void> logout() async {
+    try {
+      await storage.delete(key: "token");
+    } catch (e) {
+      throw Exception('Failed to logout!');
+    }
+    _token = null;
     notifyListeners();
   }
 }
