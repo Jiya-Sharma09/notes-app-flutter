@@ -36,7 +36,7 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void autoLogin() async{
+  Future<void> autoLogin() async{
     try{
       _token = await storage.read(key: "token");
       notifyListeners();
