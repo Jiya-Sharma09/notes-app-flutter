@@ -1,4 +1,3 @@
-import 'package:provider/provider.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:notes_app_flutter/services/api_client.dart';
 import 'package:notes_app_flutter/services/auth_service.dart';
