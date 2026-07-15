@@ -16,11 +16,7 @@ class AuthProvider extends ChangeNotifier {
   String? get token => _token;
 
   Future<void> login({required String email, required String password}) async {
-    try {
-      _token = await _authService.login(email: email, password: password);
-    } catch (e) {
-      throw Exception('Login failed: $e');
-    }
+    _token = await _authService.login(email: email, password: password);
 
     try {
       await storage.write(key: "token", value: _token);
@@ -28,7 +24,6 @@ class AuthProvider extends ChangeNotifier {
       _token = null;
       throw Exception('Failed to store token: $e');
     }
-
     notifyListeners();
   }
 
