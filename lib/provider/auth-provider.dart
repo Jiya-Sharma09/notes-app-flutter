@@ -10,8 +10,6 @@ class AuthProvider extends ChangeNotifier {
   late final AuthService _authService = AuthService(_client);
   String? _token;
 
-  AuthProvider();
-
   String? get token => _token;
 
   Future<void> login({required String email, required String password}) async {
@@ -21,6 +19,7 @@ class AuthProvider extends ChangeNotifier {
       await storage.write(key: "token", value: _token);
     } catch (e) {
       _token = null;
+      notifyListeners();
       throw Exception('Failed to store token: $e');
     }
     notifyListeners();
