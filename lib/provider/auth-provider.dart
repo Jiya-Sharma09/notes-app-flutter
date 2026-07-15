@@ -35,4 +35,15 @@ class AuthProvider extends ChangeNotifier {
     _token = null;
     notifyListeners();
   }
+
+  void autoLogin() async{
+    try{
+      _token = await storage.read(key: "token");
+      notifyListeners();
+    }catch(e){
+      _token = null;
+      notifyListeners();
+      throw Exception('Failed to auto-login!');
+    }
+  }
 }
