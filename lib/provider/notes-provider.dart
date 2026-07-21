@@ -25,7 +25,7 @@ class NotesProvider extends ChangeNotifier {
   // Methods:
 
   // to fetch all notes:
-  Future<void> fetchAllNotes(String? authToken) async {
+  Future<void> fetchAllNotes(String authToken) async {
     isLoading = true;
     _errorMessage = '';
     notifyListeners();
