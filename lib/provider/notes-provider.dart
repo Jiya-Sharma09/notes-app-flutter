@@ -42,4 +42,24 @@ class NotesProvider extends ChangeNotifier {
     isLoading = false;
     notifyListeners();
   }
+
+  Future<List<Note>> searchTitle(String title, String authToken)async{
+    isLoading = true;
+    _errorMessage = '';
+    notifyListeners();
+    _noteService.authToken = authToken;
+    List<Note> searchResults = [];
+    try{
+      searchResults = await _noteService.searchNotes(title: title, createdAt: null);
+    }catch(e){
+      if(e is ApiException){
+        _errorMessage = e.message;
+      }else{
+        _errorMessage = e.toString();
+      }
+    }
+    isLoading = false;
+    notifyListeners();
+    return searchResults;
+  }  
   }
