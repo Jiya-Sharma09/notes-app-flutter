@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:notes_app_flutter/services/api_client.dart';
 import 'package:notes_app_flutter/services/note_service.dart';
 import 'package:notes_app_flutter/models/note.dart';
-import 'package:intl/intl.dart';
 
 class NotesProvider extends ChangeNotifier {
   
