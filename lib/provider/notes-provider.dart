@@ -145,4 +145,27 @@ class NotesProvider extends ChangeNotifier {
     isLoading = false;
     notifyListeners();
   }
+
+  // update note:
+  Future<void> updateNote(int id, String title, String content, String authToken) async {
+    isLoading = true;
+    _errorMessage = '';
+    notifyListeners();
+    _noteService.authToken = authToken;
+    try {
+      final Note updatedNote = await _noteService.updateNote(id: id, title: title, content: content);
+      final index = _notes.indexWhere((note) => note.id == id);
+      if (index != -1) {
+        _notes[index] = updatedNote;
+      }
+    } catch (e) {
+      if (e is ApiException) {
+        _errorMessage = e.message;
+      } else {
+        _errorMessage = e.toString();
+      }
+    }
+    isLoading = false;
+    notifyListeners();
+  }
 }
