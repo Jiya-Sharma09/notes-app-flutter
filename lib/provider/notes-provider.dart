@@ -83,4 +83,25 @@ class NotesProvider extends ChangeNotifier {
     notifyListeners();
     return searchResults;
   }
+
+  // fetch note by id:
+  Future<Note?> fetchNoteById(int id, String authToken) async {
+    isLoading = true;
+    _errorMessage = '';
+    notifyListeners();
+    _noteService.authToken = authToken;
+    Note? note;
+    try {
+      note = await _noteService.fetchNoteById(id);
+    } catch (e) {
+      if (e is ApiException) {
+        _errorMessage = e.message;
+      } else {
+        _errorMessage = e.toString();
+      }
+    }
+    isLoading = false;
+    notifyListeners();
+    return note;
+  }
 }
