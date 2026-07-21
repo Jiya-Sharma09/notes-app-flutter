@@ -104,4 +104,45 @@ class NotesProvider extends ChangeNotifier {
     notifyListeners();
     return note;
   }
+
+  // create notes:
+  Future<void> createNote(String title, String content, String authToken) async {
+    isLoading = true;
+    _errorMessage = '';
+    notifyListeners();
+    _noteService.authToken = authToken;
+    try {
+      final Note note = await _noteService.createNote(title : title, content : content);
+      _notes.add(note);
+    } catch (e) {
+      if (e is ApiException) {
+        _errorMessage = e.message;
+      } else {
+        _errorMessage = e.toString();
+      }
+    }
+    isLoading = false;
+    notifyListeners();
+  }
+  
+
+  // delete note:
+  Future<void> deleteNote(int id, String authToken) async {
+    isLoading = true;
+    _errorMessage = '';
+    notifyListeners();
+    _noteService.authToken = authToken;
+    try {
+      await _noteService.deleteNote(id);
+      _notes.removeWhere((note) => note.id == id);
+    } catch (e) {
+      if (e is ApiException) {
+        _errorMessage = e.message;
+      } else {
+        _errorMessage = e.toString();
+      }
+    }
+    isLoading = false;
+    notifyListeners();
+  }
 }
