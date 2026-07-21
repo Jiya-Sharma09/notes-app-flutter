@@ -6,8 +6,8 @@ import 'package:flutter/foundation.dart';
 class AuthProvider extends ChangeNotifier {
   String baseURL = "";
   final storage = FlutterSecureStorage();
-  late final ApiClient _client = ApiClient(baseUrl: baseURL);
-  late final AuthService _authService = AuthService(_client);
+  final ApiClient _client;
+  AuthProvider(this._client);
   String? _token;
   bool isLoading = false;
 
@@ -17,8 +17,10 @@ class AuthProvider extends ChangeNotifier {
     isLoading = true;
     notifyListeners();
 
+    final authService = AuthService(_client);
+
     try{
-    _token = await _authService.login(email: email, password: password);
+    _token = await authService.login(email: email, password: password);
     }catch(e){
       isLoading = false;
       notifyListeners();
