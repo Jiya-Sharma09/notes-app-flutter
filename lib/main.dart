@@ -5,6 +5,7 @@ import 'package:notes_app_flutter/provider/auth-provider.dart';
 import 'package:notes_app_flutter/provider/notes-provider.dart';
 import 'package:notes_app_flutter/provider/theme_provider.dart';
 import 'package:notes_app_flutter/theme.dart';
+import 'package:notes_app_flutter/screens/splash_screen.dart';
 
 void main() async {
   runApp(
@@ -13,13 +14,13 @@ void main() async {
         ChangeNotifierProvider(
           create: (context) => ThemeProvider()..loadThemeMode(),
         ),
-        Provider(create: (context) => ApiClient(baseUrl: "")),
-        ChangeNotifierProvider(
-          create: (context) => AuthProvider(context.read<ApiClient>()),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => NotesProvider(context.read<ApiClient>()),
-        ),
+        // Provider(create: (context) => ApiClient(baseUrl: "")),
+        // ChangeNotifierProvider(
+        //   create: (context) => AuthProvider(context.read<ApiClient>()),
+        // ),
+        // ChangeNotifierProvider(
+        //   create: (context) => NotesProvider(context.read<ApiClient>()),
+        // ),
       ],
       child: MyApp(),
     ),
@@ -38,7 +39,7 @@ class MyApp extends StatelessWidget {
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       themeMode: themeProvider.themeMode,
-      // home: ,
+      home: const SplashScreen(),
     );
   }
 }

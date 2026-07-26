@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:notes_app_flutter/auth_gate.dart';
+import 'package:notes_app_flutter/screens/home_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -13,10 +14,10 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Timer(Duration(seconds: 3), () {
+    Timer(Duration(seconds: 6), () {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => AuthGate()),
+        MaterialPageRoute(builder: (context) => HomeScreen()),
       );
     });
   }
@@ -25,7 +26,10 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Image.asset('assets/images/logo.png', width: 200, height: 200),
+        child: CircleAvatar(
+          backgroundImage: AssetImage('assets/images/logo_smart.png'),
+          radius: 80,
+        ),
       ),
     );
   }
