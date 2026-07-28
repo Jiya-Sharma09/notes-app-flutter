@@ -34,7 +34,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final AuthProvider authProvider = context.read<AuthProvider>();
+    final AuthProvider authProvider = context.watch<AuthProvider>();
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
