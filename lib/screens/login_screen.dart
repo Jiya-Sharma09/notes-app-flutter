@@ -114,10 +114,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         alignment: Alignment.center,
                         child: ElevatedButton(
                           child: Text("LOGIN!"),
-                          onPressed: () {
+                          onPressed: () async {
                             if (_formKey.currentState!.validate()) {
                               try {
-                                  authProvider.login(
+                                  await authProvider.login(
                                     email: _emailController.text,
                                     password: _passwordController.text,
                                   );
