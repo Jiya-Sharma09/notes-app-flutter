@@ -49,6 +49,7 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 16),
               Container(
                 height: 220,
+                width: 220,
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(20),
@@ -112,7 +113,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       const SizedBox(height: 24),
                       FractionallySizedBox(
-                        widthFactor: 0.6,
+                        widthFactor: 0.5,
                         alignment: Alignment.center,
                         child: ElevatedButton(
                           onPressed: _onLogin,

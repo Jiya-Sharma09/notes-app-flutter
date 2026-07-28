@@ -33,18 +33,14 @@ class _SignupScreenState extends State<SignupScreen> {
             children: [
               Container(
                 height: 180,
+                width: 180,
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Center(
-                  child: Icon(
-                    Icons.person_add_alt_1_outlined,
-                    size: 64,
-                    color: Theme.of(context)
-                        .colorScheme
-                        .onSurface
-                        .withOpacity(0.45),
+                  child: Image.asset(
+                    'assets/images/onboarding.png',
                   ),
                 ),
               ),
@@ -86,7 +82,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     ),
                     const SizedBox(height: 24),
                     FractionallySizedBox(
-                      widthFactor: 0.6,
+                      widthFactor: 0.5,
                       alignment: Alignment.center,
                       child: ElevatedButton(
                         onPressed: () {
