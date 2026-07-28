@@ -34,7 +34,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final AuthProvider authProvider = context.watch<AuthProvider>();
+    final AuthProvider authProvider = context.read<AuthProvider>();
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -107,37 +107,53 @@ class _LoginScreenState extends State<LoginScreen> {
                         },
                       ),
                       const SizedBox(height: 24),
-                      
+
                       // __________________LOGIN BUTTON__________________________________
                       FractionallySizedBox(
                         widthFactor: 0.5,
                         alignment: Alignment.center,
                         child: ElevatedButton(
                           child: Text("LOGIN!"),
-                          onPressed: () async {
-                            if (_formKey.currentState!.validate()) {
-                              try {
-                                  await authProvider.login(
-                                    email: _emailController.text,
-                                    password: _passwordController.text,
-                                  );
-                                } catch (e) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text('Login failed: $e'),
-                                      backgroundColor: Color.fromARGB(255,247,21,21),
-                                    ),
-                                  );
-                                }
-                            } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Please fill in all fields'),
-                                  backgroundColor: Color.fromARGB(255,247,21,21),
-                                ),
-                              );
-                            }
-                          },
+                          onPressed: authProvider.isLoading
+                              ? null
+                              : () async {
+                                  if (_formKey.currentState!.validate()) {
+                                    try {
+                                      await authProvider.login(
+                                        email: _emailController.text,
+                                        password: _passwordController.text,
+                                      );
+                                    } catch (e) {
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        SnackBar(
+                                          content: Text('Login failed: $e'),
+                                          backgroundColor: Color.fromARGB(
+                                            255,
+                                            247,
+                                            21,
+                                            21,
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          'Please fill in all fields',
+                                        ),
+                                        backgroundColor: Color.fromARGB(
+                                          255,
+                                          247,
+                                          21,
+                                          21,
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                },
                         ),
                       ),
                     ],
