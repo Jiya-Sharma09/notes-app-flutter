@@ -23,8 +23,6 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  void validateFunc() {}
-
   void _onSignUp() {
     Navigator.push(
       context,
@@ -122,6 +120,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                         email: _emailController.text,
                                         password: _passwordController.text,
                                       );
+                                      if(mounted)Navigator.pushReplacement(context, MaterialPageRoute(builder: (_)=>HomeScreen()));
                                     } catch (e) {
                                       ScaffoldMessenger.of(
                                         context,
