@@ -113,7 +113,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         widthFactor: 0.5,
                         alignment: Alignment.center,
                         child: ElevatedButton(
-                          child: Text("LOGIN!"),
                           onPressed: authProvider.isLoading
                               ? null
                               : () async {
@@ -154,6 +153,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                     );
                                   }
                                 },
+                          child: authProvider.isLoading
+                              ? SizedBox(
+                                height: 120,
+                                width: 120,
+                                child: CircularProgressIndicator(),
+                              )
+                              : Text("LOGIN!"),
                         ),
                       ),
                     ],
