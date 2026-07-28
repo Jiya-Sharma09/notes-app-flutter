@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:notes_app_flutter/screens/home_screen.dart';
 import 'package:notes_app_flutter/screens/signup_screen.dart';
+import 'package:provider/provider.dart';
+import 'package:notes_app_flutter/provider/auth-provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -21,14 +23,7 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  void _onLogin() {
-    if (_formKey.currentState?.validate() ?? false) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
-      );
-    }
-  }
+  void validateFunc() {}
 
   void _onSignUp() {
     Navigator.push(
@@ -39,6 +34,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final AuthProvider authProvider = context.watch<AuthProvider>();
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -55,9 +51,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Center(
-                  child: Image.asset(
-                    'assets/images/onboarding.png'
-                  ),
+                  child: Image.asset('assets/images/onboarding.png'),
                 ),
               ),
               const SizedBox(height: 32),
@@ -73,16 +67,15 @@ class _LoginScreenState extends State<LoginScreen> {
                 'Log in to your account to continue.',
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context)
-                      .textTheme
-                      .bodyMedium
-                      ?.color
-                      ?.withOpacity(0.75),
+                  color: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium?.color?.withOpacity(0.75),
                 ),
               ),
               const SizedBox(height: 32),
               FractionallySizedBox(
-                widthFactor: 0.9,
+                widthFactor:
+                    0.9, // TODO: reduce the factor when polishing UI, post API integration
                 child: Form(
                   key: _formKey,
                   child: Column(
@@ -103,7 +96,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       TextFormField(
                         controller: _passwordController,
                         obscureText: true,
-                        decoration: const InputDecoration(labelText: 'Password'),
+                        decoration: const InputDecoration(
+                          labelText: 'Password',
+                        ),
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
                             return 'Please enter your password';
@@ -112,15 +107,37 @@ class _LoginScreenState extends State<LoginScreen> {
                         },
                       ),
                       const SizedBox(height: 24),
+                      
+                      // __________________LOGIN BUTTON__________________________________
                       FractionallySizedBox(
                         widthFactor: 0.5,
                         alignment: Alignment.center,
                         child: ElevatedButton(
-                          onPressed: _onLogin,
-                          child: const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 16),
-                            child: Text('Log In'),
-                          ),
+                          child: Text("LOGIN!"),
+                          onPressed: () {
+                            if (_formKey.currentState!.validate()) {
+                              try {
+                                  authProvider.login(
+                                    email: _emailController.text,
+                                    password: _passwordController.text,
+                                  );
+                                } catch (e) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('Login failed: $e'),
+                                      backgroundColor: Color.fromARGB(255,247,21,21),
+                                    ),
+                                  );
+                                }
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Please fill in all fields'),
+                                  backgroundColor: Color.fromARGB(255,247,21,21),
+                                ),
+                              );
+                            }
+                          },
                         ),
                       ),
                     ],
@@ -132,7 +149,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Don\'t have an account? ',
+                    'Don\'t have an account?',
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                   TextButton(
