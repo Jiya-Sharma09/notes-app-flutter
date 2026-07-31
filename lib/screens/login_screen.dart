@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:notes_app_flutter/auth_gate.dart';
 import 'package:notes_app_flutter/screens/signup_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:notes_app_flutter/provider/auth-provider.dart';
