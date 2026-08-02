@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:notes_app_flutter/provider/auth-provider.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -6,13 +8,13 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home'),
-      ),
-      body: const Center(
-        child: Text(
-          'Welcome to the app!',
-          style: TextStyle(fontSize: 18),
+      appBar: AppBar(title: const Text('Home')),
+      body: Center(
+        child: IconButton(
+          icon: const Icon(Icons.logout),
+          onPressed: () async {
+            await context.read<AuthProvider>().logout();
+          },
         ),
       ),
     );
