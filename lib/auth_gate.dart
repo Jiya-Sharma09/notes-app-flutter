@@ -12,10 +12,12 @@ class AuthGate extends StatefulWidget {
 
 class _AuthGateState extends State<AuthGate> {
   @override
-  void initState() {
-    super.initState();
+void initState() {
+  super.initState();
+  WidgetsBinding.instance.addPostFrameCallback((_) {
     context.read<AuthProvider>().autoLogin();
-  }
+  });
+}
 
   @override
   Widget build(BuildContext context) {

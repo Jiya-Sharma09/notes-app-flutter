@@ -14,13 +14,13 @@ void main() async {
         ChangeNotifierProvider(
           create: (context) => ThemeProvider()..loadThemeMode(),
         ),
-        // Provider(create: (context) => ApiClient(baseUrl: "")),
-        // ChangeNotifierProvider(
-        //   create: (context) => AuthProvider(context.read<ApiClient>()),
-        // ),
-        // ChangeNotifierProvider(
-        //   create: (context) => NotesProvider(context.read<ApiClient>()),
-        // ),
+        Provider(create: (context) => ApiClient(baseUrl: "http://10.0.2.2:3000")),
+        ChangeNotifierProvider(
+          create: (context) => AuthProvider(context.read<ApiClient>()),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => NotesProvider(context.read<ApiClient>()),
+        ),
       ],
       child: MyApp(),
     ),
