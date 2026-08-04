@@ -7,6 +7,7 @@ import 'package:notes_app_flutter/widget/note_tile.dart';
 import 'package:notes_app_flutter/services/auth_service.dart';
 import 'package:notes_app_flutter/widget/note_banner.dart';
 import 'package:notes_app_flutter/provider/theme_provider.dart';
+import 'package:notes_app_flutter/screens/add_notes.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -36,7 +37,7 @@ class HomeScreen extends StatelessWidget {
             children: [
               NewNoteBanner(
                 onPressed: () {
-                  // Navigate to Create Note screen
+                  Navigator.of( context).push(MaterialPageRoute(builder: (_) =>  AddNotesScreen()));
                 },
               ),
 
