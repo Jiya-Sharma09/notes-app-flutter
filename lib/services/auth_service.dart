@@ -8,7 +8,7 @@ class AuthService {
 
   AuthService(this._apiClient);
 
-  Future<String> signup({
+  Future<void> signup({
     required String name,
     required String email,
     required String password,
@@ -36,10 +36,10 @@ class AuthService {
     } catch (_) {
       throw AuthException('Invalid response format from server.');
     }
-    return _extractToken(data);
+    
   }
 
-  Future<String> login({
+  Future<Map<String, dynamic>> login({
     required String email,
     required String password,
   }) async {
@@ -66,15 +66,39 @@ class AuthService {
     } catch (_) {
       throw AuthException('Invalid response format from server.');
     }
-    return _extractToken(data);
+    
+    if (!data.containsKey('token') || data['token'] is! String) {
+      throw AuthException('Authentication token not found in response.');
+    }
+    
+    return data;
   }
 
-  String _extractToken(Map<String, dynamic> json) {
-    if (json.containsKey('token') && json['token'] is String) {
-      return json['token'] as String;
+  Future<Map<String, dynamic>> getUserProfile(String token) async {
+    http.Response response;
+    try {
+      response = await _apiClient.get(
+        '/auth/me',
+        headers: {'Authorization': 'Bearer $token'},
+      );
+    } catch (e) {
+      throw AuthException('Failed to connect to the server');
     }
 
-    throw AuthException('Authentication token not found in response.');
+    if (response.statusCode != 200) {
+      throw AuthException(
+        _parseError(response),
+        statusCode: response.statusCode,
+      );
+    }
+
+    Map<String, dynamic> data;
+    try {
+      data = jsonDecode(response.body) as Map<String, dynamic>;
+    } catch (_) {
+      throw AuthException('Invalid response format from server.');
+    }
+    return data;
   }
 
   String _parseError(http.Response response) {

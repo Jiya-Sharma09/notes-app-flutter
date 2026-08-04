@@ -11,7 +11,12 @@ class AuthProvider extends ChangeNotifier {
   String? _token;
   bool isLoading = false;
 
+  String? _name;
+  String? _email;
+
   String? get token => _token;
+  String? get userName => _name;
+  String? get userEmail => _email;
 
   Future<void> login({required String email, required String password}) async {
     isLoading = true;
@@ -19,9 +24,13 @@ class AuthProvider extends ChangeNotifier {
 
     final authService = AuthService(_client);
 
-    try{
-    _token = await authService.login(email: email, password: password);
-    }catch(e){
+    Map<String, dynamic> data;
+    try {
+      data = await authService.login(email: email, password: password);
+      _token = data['token'] as String?;
+      _name = data['user']?['name'] as String?;
+      _email = data['user']?['email'] as String?;
+    } catch (e) {
       isLoading = false;
       notifyListeners();
       rethrow;
@@ -58,11 +67,19 @@ class AuthProvider extends ChangeNotifier {
     isLoading = true;
     notifyListeners();
     try {
+      final authService = AuthService(_client);
       _token = await storage.read(key: "token");
+      if (_token != null) {
+        final userData = await authService.getUserProfile(_token!);
+        _name = userData['user']?['name'] as String?;
+        _email = userData['user']?['email'] as String?;
+      }
       isLoading = false;
       notifyListeners();
     } catch (e) {
       _token = null;
+      _name = null;
+      _email = null;
       isLoading = false;
       notifyListeners();
       throw Exception('Failed to login: $e');

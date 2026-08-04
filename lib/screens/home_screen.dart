@@ -8,7 +8,15 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Home')),
+      appBar: AppBar(
+        title: const Text(''),
+        leading: IconButton(
+          icon: const Icon(Icons.logout),
+          onPressed: () async {
+            await context.read<AuthProvider>().logout();
+          },
+        ),
+      ),
       body: Center(
         child: IconButton(
           icon: const Icon(Icons.logout),
