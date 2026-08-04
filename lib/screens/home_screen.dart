@@ -9,8 +9,24 @@ import 'package:notes_app_flutter/widget/note_banner.dart';
 import 'package:notes_app_flutter/provider/theme_provider.dart';
 import 'package:notes_app_flutter/screens/add_notes.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    final authProvider = context.read<AuthProvider>();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (authProvider.token != null) {
+        context.read<NotesProvider>().fetchAllNotes(authProvider.token!);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,22 +51,48 @@ class HomeScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              AnimatedSearchBar(
+                label: "Search notes",
+                labelStyle: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  fontSize: 16,
+                ),
+                searchDecoration: InputDecoration(
+                  hintText: "Search notes",
+                  hintStyle: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                  filled: true,
+                  fillColor: Theme.of(context).colorScheme.surfaceVariant,
+                ),
+                onChanged: (value) {},
+              ),
               NewNoteBanner(
                 onPressed: () {
-                  Navigator.of( context).push(MaterialPageRoute(builder: (_) =>  AddNotesScreen()));
+                  Navigator.of(
+                    context,
+                  ).push(MaterialPageRoute(builder: (_) => AddNotesScreen()));
                 },
               ),
 
               const SizedBox(height: 28),
 
-               Text(
+              Text(
                 "ALL NOTES",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, fontFamily: Theme.of(context).textTheme.headlineSmall?.fontFamily),
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: Theme.of(
+                    context,
+                  ).textTheme.headlineSmall?.fontFamily,
+                ),
               ),
 
               const SizedBox(height: 16),
-              // Hero section
-              // Search bar
               notes.isEmpty
                   ? const Center(child: Text("No notes yet"))
                   : ListView.separated(
