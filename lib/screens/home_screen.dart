@@ -8,6 +8,7 @@ import 'package:notes_app_flutter/services/auth_service.dart';
 import 'package:notes_app_flutter/widget/note_banner.dart';
 import 'package:notes_app_flutter/provider/theme_provider.dart';
 import 'package:notes_app_flutter/screens/add_notes.dart';
+import 'package:notes_app_flutter/screens/search_notes_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -18,12 +19,22 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   @override
+  @override
   void initState() {
     super.initState();
+    debugPrint('HOME SCREEN INIT STATE CALLED');
     final authProvider = context.read<AuthProvider>();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (authProvider.token != null) {
-        context.read<NotesProvider>().fetchAllNotes(authProvider.token!);
+        final notesProvider = context.read<NotesProvider>();
+        await notesProvider.fetchAllNotes(authProvider.token!);
+
+        // TEMP DEBUG — remove once diagnosed
+        debugPrint('TOKEN: ${authProvider.token}');
+        debugPrint('ERROR MESSAGE: "${notesProvider.errorMessage}"');
+        debugPrint('NOTES COUNT: ${notesProvider.notes.length}');
+      } else {
+        debugPrint('TOKEN IS NULL — fetch never called');
       }
     });
   }
@@ -69,7 +80,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   filled: true,
                   fillColor: Theme.of(context).colorScheme.surfaceVariant,
                 ),
-                onChanged: (value) {},
+                onFieldSubmitted: (value) {
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (_) => SearchNotesScreen(query: value),
+                  ));
+                },
               ),
               NewNoteBanner(
                 onPressed: () {
@@ -93,7 +108,14 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
 
               const SizedBox(height: 16),
-              notes.isEmpty
+              notesProvider.errorMessage.isNotEmpty
+                  ? Center(
+                      child: Text(
+                        "Error: ${notesProvider.errorMessage}",
+                        style: const TextStyle(color: Colors.red),
+                      ),
+                    )
+                  : notes.isEmpty
                   ? const Center(child: Text("No notes yet"))
                   : ListView.separated(
                       shrinkWrap: true,
