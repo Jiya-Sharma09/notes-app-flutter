@@ -8,7 +8,9 @@ class NotesProvider extends ChangeNotifier {
   // states:
   List<Note> _notes = [];
   bool isLoading = false;
+  bool isLoadingSearch = false;
   String _errorMessage = '';
+  String _SearcherrorMessage = '';
 
   //other date members:
   late final NoteService _noteService;
@@ -43,9 +45,10 @@ class NotesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  //search by title: 
   Future<List<Note>> searchTitle(String title, String authToken)async{
-    isLoading = true;
-    _errorMessage = '';
+    isLoadingSearch = true;
+    _SearcherrorMessage = '';
     notifyListeners();
     _noteService.authToken = authToken;
     List<Note> searchResults = [];
@@ -53,12 +56,12 @@ class NotesProvider extends ChangeNotifier {
       searchResults = await _noteService.searchNotes(title: title, createdAt: null);
     }catch(e){
       if(e is ApiException){
-        _errorMessage = e.message;
+        _SearcherrorMessage = e.message;
       }else{
-        _errorMessage = e.toString();
+        _SearcherrorMessage = e.toString();
       }
     }
-    isLoading = false;
+    isLoadingSearch = false;
     notifyListeners();
     return searchResults;
   }  
