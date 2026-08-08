@@ -14,6 +14,9 @@ class AuthProvider extends ChangeNotifier {
   String? userEmail;
   String? userId;
 
+  String? _name;
+  String? _email;
+
   String? get token => _token;
   String? get userName => username;
   String? get userEmailAddress => userEmail;
@@ -64,11 +67,19 @@ class AuthProvider extends ChangeNotifier {
     isLoading = true;
     notifyListeners();
     try {
+      final authService = AuthService(_client);
       _token = await storage.read(key: "token");
+      if (_token != null) {
+        final userData = await authService.getUserProfile(_token!);
+        _name = userData['user']?['name'] as String?;
+        _email = userData['user']?['email'] as String?;
+      }
       isLoading = false;
       notifyListeners();
     } catch (e) {
       _token = null;
+      _name = null;
+      _email = null;
       isLoading = false;
       notifyListeners();
       throw Exception('Failed to login: $e');
