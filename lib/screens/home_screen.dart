@@ -4,11 +4,10 @@ import 'package:notes_app_flutter/provider/auth-provider.dart';
 import 'package:animated_search_bar/animated_search_bar.dart';
 import 'package:notes_app_flutter/provider/notes-provider.dart';
 import 'package:notes_app_flutter/widget/note_tile.dart';
-import 'package:notes_app_flutter/services/auth_service.dart';
 import 'package:notes_app_flutter/widget/note_banner.dart';
-import 'package:notes_app_flutter/provider/theme_provider.dart';
 import 'package:notes_app_flutter/screens/add_notes.dart';
 import 'package:notes_app_flutter/screens/search_notes_screen.dart';
+import 'package:notes_app_flutter/services/auth_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -18,44 +17,76 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  @override
+  String? userName;
   @override
   void initState() {
     super.initState();
-    debugPrint('HOME SCREEN INIT STATE CALLED');
     final authProvider = context.read<AuthProvider>();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (authProvider.token != null) {
         final notesProvider = context.read<NotesProvider>();
         await notesProvider.fetchAllNotes(authProvider.token!);
 
-        // TEMP DEBUG — remove once diagnosed
-        debugPrint('TOKEN: ${authProvider.token}');
-        debugPrint('ERROR MESSAGE: "${notesProvider.errorMessage}"');
-        debugPrint('NOTES COUNT: ${notesProvider.notes.length}');
-      } else {
-        debugPrint('TOKEN IS NULL — fetch never called');
-      }
+      } 
     });
   }
 
+  Future<void> _confirmLogout(BuildContext context, AuthProvider authProvider) {
+  return showDialog(
+    context: context,
+    builder: (dialogContext) => AlertDialog(
+      title: const Text("Log out?"),
+      content: const Text("You'll need to sign in again to access your notes."),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(dialogContext),
+          child: const Text("Cancel"),
+        ),
+        TextButton(
+          onPressed: () {
+            Navigator.pop(dialogContext);
+            authProvider.logout();
+          },
+          child: const Text("Log out"),
+        ),
+      ],
+    ),
+  );
+}
+
+
+
+
   @override
   Widget build(BuildContext context) {
-    final AppTheme = context.watch<ThemeProvider>();
     final notesProvider = context.watch<NotesProvider>();
     final notes = notesProvider.notes;
-    final _authService = context.read<AuthProvider>();
+    final _authProvider = context.read<AuthProvider>();
 
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          onPressed: () {
-            _authService.logout();
-          },
-          icon: Icon(Icons.logout),
+      title: Text(
+        "Hi, ${_authProvider.userName} 👋",
+        style: TextStyle(
+          fontWeight: FontWeight.w600,
+          color: Theme.of(context).colorScheme.onPrimaryContainer,
         ),
-        backgroundColor: Theme.of(context).colorScheme.primaryContainer,
       ),
+      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.settings_outlined),
+          onPressed: () {
+            // Navigate to your settings screen once it exists
+            // Navigator.of(context).push(MaterialPageRoute(builder: (_) => SettingsScreen()));
+          },
+        ),
+        IconButton(
+          icon: const Icon(Icons.logout),
+          onPressed: () {},
+        ),
+      ],
+    ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
