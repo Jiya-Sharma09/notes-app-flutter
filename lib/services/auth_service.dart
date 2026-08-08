@@ -74,15 +74,43 @@ class AuthService {
     return data;
   }
 
-  Future<Map<String, dynamic>> getUserProfile(String token) async {
+  Future<Map<String, String>> getUserDetails(String token) async {
     http.Response response;
     try {
-      response = await _apiClient.get(
-        '/auth/me',
-        headers: {'Authorization': 'Bearer $token'},
-      );
+      response = await _apiClient.get('/auth/me', headers: {'Authorization': 'Bearer $token'});
     } catch (e) {
       throw AuthException('Failed to connect to the server');
+    }
+
+    if (response.statusCode != 200) {
+      throw AuthException(
+        _parseError(response),
+        statusCode: response.statusCode,
+      );
+    }
+
+    Map<String, dynamic> data;
+    try {
+      data = jsonDecode(response.body) as Map<String, dynamic>;
+    } catch (_) {
+      throw AuthException('Invalid response format from server.');
+    }
+
+    final user = data['user'];
+    if (user is! Map<String, dynamic>) {
+      throw AuthException('Malformed user data in response.');
+    }
+
+    return {
+      'id': user['id'].toString(),
+      'name': user['name'] as String,
+      'email': user['email'] as String,
+    };
+  }
+
+  String _extractToken(Map<String, dynamic> json) {
+    if (json.containsKey('token') && json['token'] is String) {
+      return json['token'] as String;
     }
 
     if (response.statusCode != 200) {

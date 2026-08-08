@@ -10,13 +10,17 @@ class AuthProvider extends ChangeNotifier {
   AuthProvider(this._client);
   String? _token;
   bool isLoading = false;
+  String? username;
+  String? userEmail;
+  String? userId;
 
   String? _name;
   String? _email;
 
   String? get token => _token;
-  String? get userName => _name;
-  String? get userEmail => _email;
+  String? get userName => username;
+  String? get userEmailAddress => userEmail;
+  String? get userid => userId;
 
   Future<void> login({required String email, required String password}) async {
     isLoading = true;
@@ -24,12 +28,8 @@ class AuthProvider extends ChangeNotifier {
 
     final authService = AuthService(_client);
 
-    Map<String, dynamic> data;
     try {
-      data = await authService.login(email: email, password: password);
-      _token = data['token'] as String?;
-      _name = data['user']?['name'] as String?;
-      _email = data['user']?['email'] as String?;
+      _token = await authService.login(email: email, password: password);
     } catch (e) {
       isLoading = false;
       notifyListeners();
@@ -84,5 +84,25 @@ class AuthProvider extends ChangeNotifier {
       notifyListeners();
       throw Exception('Failed to login: $e');
     }
+  }
+
+  Future<void> userDetails() async {
+    isLoading = true;
+    notifyListeners();
+
+    final authService = AuthService(_client);
+
+    try {
+      final userDetails = await authService.getUserDetails(token!);
+      username = userDetails['name'];
+      userEmail = userDetails['email'];
+      userId = userDetails['id'].toString();
+    } catch (e) {
+      isLoading = false;
+      notifyListeners();
+      rethrow;
+    }
+    isLoading = false;
+    notifyListeners();
   }
 }

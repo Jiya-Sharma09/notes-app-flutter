@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'package:notes_app_flutter/models/note.dart';
 import 'package:notes_app_flutter/services/api_client.dart';
+import 'package:flutter/foundation.dart';
 
 class NoteService {
   final ApiClient _apiClient;
@@ -95,7 +96,7 @@ class NoteService {
 
     _assertResponseCreated(response);
     Map<String, dynamic> data;
-    try{
+    try {
       data = jsonDecode(response.body) as Map<String, dynamic>;
     } catch (e) {
       throw ApiException('Invalid response format from server!');
@@ -122,7 +123,7 @@ class NoteService {
     _assertResponseOk(response);
     Map<String, dynamic> data;
     try {
-     data = jsonDecode(response.body) as Map<String, dynamic>;
+      data = jsonDecode(response.body) as Map<String, dynamic>;
     } catch (e) {
       throw ApiException('Invalid response format from server!');
     }
@@ -132,10 +133,7 @@ class NoteService {
   Future<void> deleteNote(int id) async {
     http.Response response;
     try {
-      response = await _apiClient.delete(
-        '/notes/$id',
-        headers: _authHeaders,
-      );
+      response = await _apiClient.delete('/notes/$id', headers: _authHeaders);
     } catch (e) {
       throw ApiException('Failed to connect to the server!');
     }

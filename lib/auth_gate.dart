@@ -11,24 +11,36 @@ class AuthGate extends StatefulWidget {
 }
 
 class _AuthGateState extends State<AuthGate> {
+  bool _initializing = true;
+
   @override
-void initState() {
-  super.initState();
-  WidgetsBinding.instance.addPostFrameCallback((_) {
-    context.read<AuthProvider>().autoLogin();
-  });
-}
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final authProvider = context.read<AuthProvider>();
+      await authProvider.autoLogin();
+      if (authProvider.token != null) {
+        try {
+          await authProvider.userDetails();
+        } catch (e) {
+          debugPrint('userDetails failed: $e');
+          // don't rethrow — a failed name/email fetch shouldn't block navigation
+        }
+      }
+      if (mounted) {
+        setState(() => _initializing = false);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
-    if (authProvider.isLoading) {
-      // TODO: add navigation to splash screen!
+    if (_initializing) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
-    if (authProvider.token == null) {
-      return const LoginScreen();
-    } else {
-      return const HomeScreen();
-    }
+    return authProvider.token == null
+        ? const LoginScreen()
+        : const HomeScreen();
   }
 }
