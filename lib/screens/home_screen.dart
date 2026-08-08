@@ -8,6 +8,7 @@ import 'package:notes_app_flutter/widget/note_banner.dart';
 import 'package:notes_app_flutter/screens/add_notes.dart';
 import 'package:notes_app_flutter/screens/search_notes_screen.dart';
 import 'package:notes_app_flutter/services/auth_service.dart';
+import 'package:notes_app_flutter/screens/read_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -155,7 +156,14 @@ class _HomeScreenState extends State<HomeScreen> {
                       separatorBuilder: (_, __) => const SizedBox(height: 10),
                       itemBuilder: (context, index) {
                         final note = notes[index];
-                        return NoteTile(note: note, onTap: () {});
+                        return NoteTile(note: note, onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => ReadScreen(noteId: note.id),
+                            ),
+                          );
+                        });
                       },
                     ),
             ],

@@ -4,6 +4,7 @@ import 'package:notes_app_flutter/provider/auth-provider.dart';
 import 'package:notes_app_flutter/provider/notes-provider.dart';
 import 'package:notes_app_flutter/widget/note_tile.dart';
 import 'package:notes_app_flutter/models/note.dart';
+import 'package:notes_app_flutter/screens/read_screen.dart';
 
 class SearchNotesScreen extends StatefulWidget {
   final String query;
@@ -98,7 +99,14 @@ class _SearchNotesScreenState extends State<SearchNotesScreen> {
       separatorBuilder: (_, __) => const SizedBox(height: 10),
       itemBuilder: (context, index) {
         final note = _results[index];
-        return NoteTile(note: note, onTap: () {});
+        return NoteTile(note: note, onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => ReadScreen(noteId: note.id),
+            ),
+          );
+        });
       },
     );
   }
