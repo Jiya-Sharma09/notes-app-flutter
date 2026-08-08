@@ -43,14 +43,11 @@ class NoteService {
     }
     http.Response response;
     try {
-      debugPrint('SEARCH REQUEST: title=$title, url will hit /notes/search');
       response = await _apiClient.get(
         '/notes/search',
         headers: _authHeaders,
         queryParameters: queryParameters.isEmpty ? null : queryParameters,
       );
-      debugPrint('SEARCH STATUS: ${response.statusCode}');
-      debugPrint('SEARCH BODY: ${response.body}');
     } catch (e) {
       throw ApiException('Failed to connect to the server!');
     }

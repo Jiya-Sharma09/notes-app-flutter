@@ -10,8 +10,14 @@ class AuthProvider extends ChangeNotifier {
   AuthProvider(this._client);
   String? _token;
   bool isLoading = false;
+  String? username;
+  String? userEmail;
+  String? userId;
 
   String? get token => _token;
+  String? get userName => username;
+  String? get userEmailAddress => userEmail;
+  String? get userid => userId;
 
   Future<void> login({required String email, required String password}) async {
     isLoading = true;
@@ -19,9 +25,9 @@ class AuthProvider extends ChangeNotifier {
 
     final authService = AuthService(_client);
 
-    try{
-    _token = await authService.login(email: email, password: password);
-    }catch(e){
+    try {
+      _token = await authService.login(email: email, password: password);
+    } catch (e) {
       isLoading = false;
       notifyListeners();
       rethrow;
@@ -67,5 +73,25 @@ class AuthProvider extends ChangeNotifier {
       notifyListeners();
       throw Exception('Failed to login: $e');
     }
+  }
+
+  Future<void> userDetails() async {
+    isLoading = true;
+    notifyListeners();
+
+    final authService = AuthService(_client);
+
+    try {
+      final userDetails = await authService.getUserDetails(token!);
+      username = userDetails['name'];
+      userEmail = userDetails['email'];
+      userId = userDetails['id'].toString();
+    } catch (e) {
+      isLoading = false;
+      notifyListeners();
+      rethrow;
+    }
+    isLoading = false;
+    notifyListeners();
   }
 }
