@@ -5,11 +5,40 @@ import 'package:notes_app_flutter/provider/notes-provider.dart';
 import 'package:notes_app_flutter/screens/edit_screen.dart';
 import 'package:notes_app_flutter/screens/summary_screen.dart';
 import 'package:notes_app_flutter/screens/rev_questions_screen.dart';
+import 'package:notes_app_flutter/provider/auth-provider.dart';
 
 class ReadScreen extends StatelessWidget {
   final int noteId;
 
   const ReadScreen({super.key, required this.noteId});
+
+  Future<void> _confirmDelete(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Delete Note'),
+        content: const Text('This action cannot be undone.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+    if (!context.mounted) return;
+
+    final token = context.read<AuthProvider>().token;
+    await context.read<NotesProvider>().deleteNote(noteId, token!);
+
+    if (context.mounted) Navigator.pop(context);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,10 +69,13 @@ class ReadScreen extends StatelessWidget {
                   context,
                   MaterialPageRoute(builder: (_) => EditScreen(noteId: noteId)),
                 );
+              } else if (value == 'delete') {
+                _confirmDelete(context);
               }
             },
             itemBuilder: (context) => const [
               PopupMenuItem(value: 'edit', child: Text('Edit Note')),
+              PopupMenuItem(value: 'delete', child: Text('Delete Note')),
             ],
           ),
         ],
@@ -60,7 +92,9 @@ class ReadScreen extends StatelessWidget {
                   width: 48,
                   height: 48,
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.4),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.primaryContainer.withOpacity(0.4),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
@@ -73,8 +107,8 @@ class ReadScreen extends StatelessWidget {
                   child: Text(
                     note.title,
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ],
@@ -82,14 +116,17 @@ class ReadScreen extends StatelessWidget {
             const SizedBox(height: 16),
             Row(
               children: [
-                Icon(Icons.calendar_today_outlined,
-                    size: 16, color: Theme.of(context).colorScheme.outline),
+                Icon(
+                  Icons.calendar_today_outlined,
+                  size: 16,
+                  color: Theme.of(context).colorScheme.outline,
+                ),
                 const SizedBox(width: 8),
                 Text(
                   'Created: ${DateFormat('d MMM yyyy').format(note.createdAt)}',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.outline,
-                      ),
+                    color: Theme.of(context).colorScheme.outline,
+                  ),
                 ),
               ],
             ),
@@ -120,11 +157,15 @@ class ReadScreen extends StatelessWidget {
                   for (int i = 0; i < paragraphs.length; i++) ...[
                     Text(
                       paragraphs[i],
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(height: 1.5),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodyLarge?.copyWith(height: 1.5),
                     ),
                     if (i != paragraphs.length - 1) ...[
                       const SizedBox(height: 16),
-                      _DottedDivider(color: Theme.of(context).colorScheme.outlineVariant),
+                      _DottedDivider(
+                        color: Theme.of(context).colorScheme.outlineVariant,
+                      ),
                       const SizedBox(height: 16),
                     ],
                   ],
@@ -147,7 +188,9 @@ class ReadScreen extends StatelessWidget {
                   color: Colors.teal,
                   onTap: () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => SummaryScreen(noteId: noteId.toInt())),
+                    MaterialPageRoute(
+                      builder: (_) => SummaryScreen(noteId: noteId.toInt()),
+                    ),
                   ),
                 ),
               ),
@@ -159,7 +202,9 @@ class ReadScreen extends StatelessWidget {
                   color: Colors.pinkAccent,
                   onTap: () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => RevQuestionsScreen(noteId: noteId)),
+                    MaterialPageRoute(
+                      builder: (_) => RevQuestionsScreen(noteId: noteId),
+                    ),
                   ),
                 ),
               ),
@@ -171,7 +216,9 @@ class ReadScreen extends StatelessWidget {
                   color: Colors.orange,
                   onTap: () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => EditScreen(noteId: noteId)),
+                    MaterialPageRoute(
+                      builder: (_) => EditScreen(noteId: noteId),
+                    ),
                   ),
                 ),
               ),
