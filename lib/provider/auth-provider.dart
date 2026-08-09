@@ -1,7 +1,7 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:notes_app_flutter/services/api_client.dart';
-import 'package:notes_app_flutter/services/auth_service.dart';
 import 'package:flutter/foundation.dart';
+import 'package:notes_app_flutter/services/auth_service.dart';
 
 class AuthProvider extends ChangeNotifier {
   String baseURL = "";
@@ -70,9 +70,9 @@ class AuthProvider extends ChangeNotifier {
       final authService = AuthService(_client);
       _token = await storage.read(key: "token");
       if (_token != null) {
-        final userData = await authService.getUserProfile(_token!);
-        _name = userData['user']?['name'] as String?;
-        _email = userData['user']?['email'] as String?;
+        final userData = await authService.getUserDetails(_token!);
+        _name = userData['name'];
+        _email = userData['email'];
       }
       isLoading = false;
       notifyListeners();
