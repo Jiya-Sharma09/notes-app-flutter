@@ -93,7 +93,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
             }
           }
 
-          return Center(child: SingleChildScrollView(
+          return SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
             child: Center(
               child: Container(
@@ -119,7 +119,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                 ),
               ),
             ),
-          ));
+          );
         },
       ),
     );

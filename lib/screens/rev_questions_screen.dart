@@ -84,7 +84,8 @@ class _RevQuestionsScreenState extends State<RevQuestionsScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Revision Questions')),
+      appBar: AppBar(title: const Text('Revision Questions'),
+      backgroundColor: Theme.of(context).primaryColor,),
       body: FutureBuilder<List<RevisionQuestion>>(
         future: _questionsFuture,
         builder: (context, snapshot) {
@@ -218,6 +219,10 @@ class _FlashCardFace extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(16.0),
+        border: Border.all(
+                    color: Theme.of(context).colorScheme.secondary,
+                    width: 2,
+                  ),
         boxShadow: const [
           BoxShadow(
             color: Colors.black26,
