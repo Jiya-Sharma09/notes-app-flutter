@@ -36,7 +36,8 @@ class _SummaryScreenState extends State<SummaryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Summary')),
+      appBar: AppBar(title: Text('Summary'),
+      backgroundColor: Theme.of(context).colorScheme.primary),
       body: FutureBuilder<List<String>>(
         future: _summaryFuture,
         builder: (context, snapshot) {
@@ -77,16 +78,47 @@ class _SummaryScreenState extends State<SummaryScreen> {
             return const Center(child: Text('No summary available.'));
           }
 
-          return ListView.separated(
-            padding: const EdgeInsets.all(16.0),
-            itemCount: summaryPoints.length,
-            separatorBuilder: (_, __) => const Divider(),
-            itemBuilder: (context, index) {
-              return ListTile(
+          // Build the same tile+divider structure ListView.separated gave us,
+          // but as a Column, since it now lives inside a SingleChildScrollView.
+          final List<Widget> itemWidgets = [];
+          for (int index = 0; index < summaryPoints.length; index++) {
+            itemWidgets.add(
+              ListTile(
                 leading: const Icon(Icons.circle, size: 8),
                 title: Text(summaryPoints[index]),
-              );
-            },
+              ),
+            );
+            if (index != summaryPoints.length - 1) {
+              itemWidgets.add(const Divider());
+            }
+          }
+
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(16.0),
+            child: Center(
+              child: Container(
+                constraints: const BoxConstraints(maxWidth: 600),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: Theme.of(context).colorScheme.primary,
+                    width: 2,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.15),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: itemWidgets,
+                ),
+              ),
+            ),
           );
         },
       ),
