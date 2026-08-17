@@ -14,8 +14,7 @@ class AuthProvider extends ChangeNotifier {
   String? userEmail;
   String? userId;
 
-  String? _name;
-  String? _email;
+  
 
   String? get token => _token;
   String? get userName => username;
@@ -67,23 +66,28 @@ class AuthProvider extends ChangeNotifier {
     isLoading = true;
     notifyListeners();
     try {
-      final authService = AuthService(_client);
       _token = await storage.read(key: "token");
-      if (_token != null) {
-        final userData = await authService.getUserDetails(_token!);
-        _name = userData['name'];
-        _email = userData['email'];
-      }
-      isLoading = false;
-      notifyListeners();
     } catch (e) {
       _token = null;
-      _name = null;
-      _email = null;
       isLoading = false;
       notifyListeners();
-      throw Exception('Failed to login: $e');
+      return;
     }
+
+    if (_token != null) {
+      try {
+        final authService = AuthService(_client);
+        final userData = await authService.getUserDetails(_token!);
+        username = userData['name'];
+        userEmail = userData['email'];
+      } catch (e) {
+        debugPrint('autoLogin: profile fetch failed, keeping token: $e');
+        // token stays valid — don't log the user out over a profile fetch failure
+      }
+    }
+
+    isLoading = false;
+    notifyListeners();
   }
 
   Future<void> userDetails() async {
