@@ -9,8 +9,11 @@ class NotesProvider extends ChangeNotifier {
   List<Note> _notes = [];
   bool isLoading = false;
   bool isLoadingSearch = false;
+  bool isLoadingUpdate = false;
   String _errorMessage = '';
   String _SearcherrorMessage = '';
+  String _errorMessageUpdate = '';
+  String get errorMessageUpdate => _errorMessageUpdate;
 
   //other date members:
   late final NoteService _noteService;
@@ -150,25 +153,29 @@ class NotesProvider extends ChangeNotifier {
   }
 
   // update note:
-  Future<void> updateNote(int id, String title, String content, String authToken) async {
-    isLoading = true;
-    _errorMessage = '';
+// update note:
+Future<bool> updateNote(int id, String title, String content, String authToken) async {
+    isLoadingUpdate = true;
+    _errorMessageUpdate = '';
     notifyListeners();
     _noteService.authToken = authToken;
+    bool success = false;
     try {
       final Note updatedNote = await _noteService.updateNote(id: id, title: title, content: content);
       final index = _notes.indexWhere((note) => note.id == id);
       if (index != -1) {
         _notes[index] = updatedNote;
       }
+      success = true;
     } catch (e) {
       if (e is ApiException) {
-        _errorMessage = e.message;
+        _errorMessageUpdate = e.message;
       } else {
-        _errorMessage = e.toString();
+        _errorMessageUpdate = e.toString();
       }
     }
-    isLoading = false;
+    isLoadingUpdate = false;
     notifyListeners();
+    return success;
   }
 }

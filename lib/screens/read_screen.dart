@@ -67,7 +67,7 @@ class ReadScreen extends StatelessWidget {
               if (value == 'edit') {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => EditScreen(noteId: noteId)),
+                  MaterialPageRoute(builder: (_) => EditScreen(note: note)),
                 );
               } else if (value == 'delete') {
                 _confirmDelete(context);
@@ -217,7 +217,7 @@ class ReadScreen extends StatelessWidget {
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => EditScreen(noteId: noteId),
+                      builder: (_) => EditScreen(note: note),
                     ),
                   ),
                 ),
