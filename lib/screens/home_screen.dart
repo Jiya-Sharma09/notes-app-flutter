@@ -49,7 +49,9 @@ class _HomeScreenState extends State<HomeScreen> {
             Navigator.pop(dialogContext);
             authProvider.logout();
           },
-          child: const Text("Log out"),
+          child: const Text("Log out",
+          style: TextStyle(color: Colors.red),
+          ),
         ),
       ],
     ),
