@@ -67,29 +67,32 @@ class _EditScreenState extends State<EditScreen> {
 
     if (success) {
       setState(() => _hasChanges = false);
+      final colorScheme = Theme.of(context).colorScheme;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           behavior: SnackBarBehavior.floating,
-          backgroundColor: const Color(0xFF1E293B),
-          content: const Row(
+          backgroundColor: colorScheme.inverseSurface,
+          content: Row(
             children: [
-              Icon(Icons.check_circle_rounded, color: Color(0xFF34D399), size: 18),
-              SizedBox(width: 10),
-              Text('Saved'),
+              Icon(Icons.check_circle_rounded, color: colorScheme.primary, size: 18),
+              const SizedBox(width: 10),
+              Text('Saved', style: TextStyle(color: colorScheme.onInverseSurface)),
             ],
           ),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         ),
       );
     } else {
+      final colorScheme = Theme.of(context).colorScheme;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           behavior: SnackBarBehavior.floating,
-          backgroundColor: const Color(0xFF1E293B),
+          backgroundColor: colorScheme.inverseSurface,
           content: Text(
             notesProvider.errorMessageUpdate.isNotEmpty
                 ? notesProvider.errorMessageUpdate
                 : 'Failed to save note',
+            style: TextStyle(color: colorScheme.onInverseSurface),
           ),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         ),
@@ -108,21 +111,18 @@ class _EditScreenState extends State<EditScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const accent = Color(0xFF6366F1); // indigo — primary action color
-    const surface = Color(0xFFF8FAFC);
-    const border = Color(0xFFE2E8F0);
-    const muted = Color(0xFF64748B);
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      backgroundColor: surface,
+      backgroundColor: colorScheme.surface,
       appBar: AppBar(
-        backgroundColor: surface,
+        backgroundColor: colorScheme.surface,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         scrolledUnderElevation: 0.5,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded, size: 22),
-          color: const Color(0xFF0F172A),
+          color: colorScheme.onSurface,
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Row(
@@ -132,7 +132,7 @@ class _EditScreenState extends State<EditScreen> {
               'Edit note',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w600,
-                    color: const Color(0xFF0F172A),
+                    color: colorScheme.onSurface,
                   ),
             ),
             const SizedBox(width: 10),
@@ -142,15 +142,15 @@ class _EditScreenState extends State<EditScreen> {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFEF3C7),
+                  color: colorScheme.tertiaryContainer,
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: const Text(
+                child: Text(
                   'Unsaved',
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF92400E),
+                    color: colorScheme.onTertiaryContainer,
                   ),
                 ),
               ),
@@ -167,9 +167,9 @@ class _EditScreenState extends State<EditScreen> {
                 child: ElevatedButton.icon(
                   onPressed: (_hasChanges && !_isSaving) ? _handleSave : null,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: accent,
-                    disabledBackgroundColor: const Color(0xFFCBD5E1),
-                    foregroundColor: Colors.white,
+                    backgroundColor: colorScheme.primary,
+                    disabledBackgroundColor: colorScheme.onSurface.withOpacity(0.12),
+                    foregroundColor: colorScheme.onPrimary,
                     elevation: 0,
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     shape: RoundedRectangleBorder(
@@ -177,12 +177,12 @@ class _EditScreenState extends State<EditScreen> {
                     ),
                   ),
                   icon: _isSaving
-                      ? const SizedBox(
+                      ? SizedBox(
                           width: 15,
                           height: 15,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation(Colors.white),
+                            valueColor: AlwaysStoppedAnimation(colorScheme.onPrimary),
                           ),
                         )
                       : const Icon(Icons.check_rounded, size: 18),
@@ -200,7 +200,7 @@ class _EditScreenState extends State<EditScreen> {
         ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1),
-          child: Container(height: 1, color: border),
+          child: Container(height: 1, color: colorScheme.outlineVariant),
         ),
       ),
       body: SizedBox.expand(
@@ -211,17 +211,17 @@ class _EditScreenState extends State<EditScreen> {
             children: [
               TextField(
                 controller: _titleController,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.w800,
-                  color: Color(0xFF0F172A),
+                  color: colorScheme.onSurface,
                   height: 1.25,
                   letterSpacing: -0.5,
                 ),
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   hintText: 'Untitled',
                   hintStyle: TextStyle(
-                    color: Color(0xFFCBD5E1),
+                    color: colorScheme.onSurface.withOpacity(0.3),
                     fontWeight: FontWeight.w800,
                   ),
                   filled: false,
@@ -236,14 +236,14 @@ class _EditScreenState extends State<EditScreen> {
               Expanded(
                 child: TextField(
                   controller: _contentController,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
-                    color: Color(0xFF334155),
+                    color: colorScheme.onSurfaceVariant,
                     height: 1.7,
                   ),
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     hintText: 'Start writing…',
-                    hintStyle: TextStyle(color: Color(0xFFCBD5E1)),
+                    hintStyle: TextStyle(color: colorScheme.onSurface.withOpacity(0.3)),
                     filled: false,
                     border: InputBorder.none,
                     enabledBorder: InputBorder.none,
@@ -255,7 +255,7 @@ class _EditScreenState extends State<EditScreen> {
                   expands: true,
                   textAlignVertical: TextAlignVertical.top,
                   keyboardAppearance: Brightness.light,
-                  cursorColor: const Color(0xFF6366F1),
+                  cursorColor: colorScheme.primary,
                 ),
               ),
             ],

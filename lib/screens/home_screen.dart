@@ -84,7 +84,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         IconButton(
           icon: const Icon(Icons.logout),
-          onPressed: () {},
+          onPressed: () => _confirmLogout(context, _authProvider),
         ),
       ],
     ),
