@@ -14,6 +14,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  bool _obscurePassword = true;
 
   @override
   void dispose() {
@@ -92,9 +93,24 @@ class _LoginScreenState extends State<LoginScreen> {
                       const SizedBox(height: 16),
                       TextFormField(
                         controller: _passwordController,
-                        obscureText: true,
-                        decoration: const InputDecoration(
+                        obscureText: _obscurePassword,
+                        decoration: InputDecoration(
                           labelText: 'Password',
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _obscurePassword
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _obscurePassword = !_obscurePassword;
+                              });
+                            },
+                          ),
                         ),
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
@@ -152,10 +168,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                 },
                           child: authProvider.isLoading
                               ? SizedBox(
-                                height: 120,
-                                width: 120,
-                                child: CircularProgressIndicator(),
-                              )
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(),
+                                )
                               : Text("LOGIN!"),
                         ),
                       ),

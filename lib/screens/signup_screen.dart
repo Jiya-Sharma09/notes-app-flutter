@@ -17,6 +17,7 @@ class _SignupScreenState extends State<SignupScreen> {
   final _nameController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool isLoading = false;
+  bool _obscurePassword = true;
 
   @override
   void dispose() {
@@ -94,11 +95,24 @@ class _SignupScreenState extends State<SignupScreen> {
                         },
                       ),
                       const SizedBox(height: 16),
-                      TextFormField(
+                                            TextFormField(
                         controller: _passwordController,
-                        obscureText: true,
-                        decoration: const InputDecoration(
+                        obscureText: _obscurePassword,
+                        decoration: InputDecoration(
                           labelText: 'Password',
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _obscurePassword
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _obscurePassword = !_obscurePassword;
+                              });
+                            },
+                          ),
                         ),
                         validator: (value) {
                           if (value == null || value.trim().length < 8) {
