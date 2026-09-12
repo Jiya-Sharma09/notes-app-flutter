@@ -113,4 +113,54 @@ class AuthProvider extends ChangeNotifier {
     isLoading = false;
     notifyListeners();
   }
+
+  Future<Map<String, dynamic>> signup({
+  required String name,
+  required String email,
+  required String password,
+}) async {
+  isLoading = true;
+  notifyListeners();
+
+  final authService = AuthService(_client);
+
+  try {
+    return await authService.signup(
+      name: name,
+      email: email,
+      password: password,
+    );
+  } finally {
+    isLoading = false;
+    notifyListeners();
+  }
+}
+
+Future<void> verifyOtp(String id, String otp) async {
+  isLoading = true;
+  notifyListeners();
+
+  final authService = AuthService(_client);
+
+  try {
+    await authService.verifyOtp(id, otp);
+  } finally {
+    isLoading = false;
+    notifyListeners();
+  }
+}
+
+Future<void> resendOtp(String id) async {
+  isLoading = true;
+  notifyListeners();
+
+  final authService = AuthService(_client);
+
+  try {
+    await authService.resendOtp(id);
+  } finally {
+    isLoading = false;
+    notifyListeners();
+  }
+}
 }
