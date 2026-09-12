@@ -8,7 +8,7 @@ class AuthService {
 
   AuthService(this._apiClient);
 
-  Future<void> signup({
+  Future<Map<String, dynamic>> signup({
     required String name,
     required String email,
     required String password,
@@ -24,11 +24,17 @@ class AuthService {
     }
 
     if (response.statusCode != 201) {
-      throw AuthException(
-        _parseError(response),
-        statusCode: response.statusCode,
-      );
+      throw _parseAuthException(response);
     }
+
+    Map<String, dynamic> data;
+    try {
+      data = jsonDecode(response.body) as Map<String, dynamic>;
+    } catch (_) {
+      throw AuthException('Invalid response format from server.');
+    }
+
+    return data;
 
   }
 
@@ -47,10 +53,7 @@ class AuthService {
     }
 
     if (response.statusCode != 200) {
-      throw AuthException(
-        _parseError(response),
-        statusCode: response.statusCode,
-      );
+      throw _parseAuthException(response);
     }
 
     Map<String, dynamic> data;
@@ -77,10 +80,7 @@ class AuthService {
     }
 
     if (response.statusCode != 200) {
-      throw AuthException(
-        _parseError(response),
-        statusCode: response.statusCode,
-      );
+      throw _parseAuthException(response);
     }
 
     Map<String, dynamic> data;
@@ -110,24 +110,83 @@ class AuthService {
     throw AuthException('Authentication token not found in response.');
   }
 
-  String _parseError(http.Response response) {
+  AuthException _parseAuthException(http.Response response) {
     try {
       final Map<String, dynamic> json =
           jsonDecode(response.body) as Map<String, dynamic>;
-      return json['message']?.toString() ??
-          response.reasonPhrase ??
-          'Unknown auth error';
+
+      return AuthException(
+        json['message']?.toString() ??
+            response.reasonPhrase ??
+            'Unknown auth error',
+        statusCode: response.statusCode,
+        code: json['code']?.toString(),
+        userId: _parseUserId(json['userId']),
+      );
     } catch (_) {
-      return response.reasonPhrase ?? 'Unknown auth error';
+      return AuthException(
+        response.reasonPhrase ?? 'Unknown auth error',
+        statusCode: response.statusCode,
+      );
     }
   }
+
+  int? _parseUserId(dynamic value) {
+    if (value is int) {
+      return value;
+    }
+
+    return int.tryParse(value?.toString() ?? '');
+  }
+
+  Future<void> verifyOtp(String id, String otp) async {
+  http.Response response;
+  try {
+    response = await _apiClient.post(
+      '/auth/verify-otp',
+      body: jsonEncode({'userId': id, 'otp': otp}),
+    );
+  } catch (e) {
+    throw AuthException('Failed to connect to the server');
+  }
+
+  if (response.statusCode != 200) {
+    throw _parseAuthException(response);
+  }
 }
+
+Future<void> resendOtp(String id) async {
+  http.Response response;
+  try {
+    response = await _apiClient.post(
+      '/auth/resend-otp',
+      body: jsonEncode({'userId': id}),
+    );
+  } catch (e) {
+    throw AuthException('Failed to connect to the server');
+  }
+
+  if (response.statusCode != 200) {
+    throw _parseAuthException(response);
+  }
+}
+}
+
 
 class AuthException implements Exception {
   final String message;
   final int? statusCode;
-  AuthException(this.message, {this.statusCode});
+  final String? code;
+  final int? userId;
+
+  AuthException(
+    this.message, {
+    this.statusCode,
+    this.code,
+    this.userId,
+  });
 
   @override
-  String toString() => 'AuthException $statusCode: $message';
+  String toString() =>
+      'AuthException $statusCode${code != null ? ' [$code]' : ''}: $message';
 }
