@@ -28,7 +28,11 @@ class AuthProvider extends ChangeNotifier {
     final authService = AuthService(_client);
 
     try {
-      _token = await authService.login(email: email, password: password);
+      final loginResponse = await authService.login(email: email, password: password);
+      _token = loginResponse['token'];
+      username = loginResponse['username'];
+      userEmail = loginResponse['email'];
+      userId = loginResponse['userId'];
     } catch (e) {
       isLoading = false;
       notifyListeners();

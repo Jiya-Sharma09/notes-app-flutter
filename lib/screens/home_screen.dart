@@ -9,6 +9,7 @@ import 'package:notes_app_flutter/screens/add_notes.dart';
 import 'package:notes_app_flutter/screens/search_notes_screen.dart';
 import 'package:notes_app_flutter/services/auth_service.dart';
 import 'package:notes_app_flutter/screens/read_screen.dart';
+import 'package:notes_app_flutter/provider/theme_provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -48,7 +49,9 @@ class _HomeScreenState extends State<HomeScreen> {
             Navigator.pop(dialogContext);
             authProvider.logout();
           },
-          child: const Text("Log out"),
+          child: const Text("Log out",
+          style: TextStyle(color: Colors.red),
+          ),
         ),
       ],
     ),
@@ -76,16 +79,21 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: Theme.of(context).colorScheme.primaryContainer,
       actions: [
         IconButton(
-          icon: const Icon(Icons.settings_outlined),
-          onPressed: () {
-            // Navigate to your settings screen once it exists
-            // Navigator.of(context).push(MaterialPageRoute(builder: (_) => SettingsScreen()));
-          },
-        ),
-        IconButton(
-          icon: const Icon(Icons.logout),
-          onPressed: () {},
-        ),
+  icon: Icon(
+    Theme.of(context).brightness == Brightness.dark
+        ? Icons.light_mode_outlined
+        : Icons.dark_mode_outlined,
+  ),
+  onPressed: () {
+    final themeProvider = context.read<ThemeProvider>();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    themeProvider.setThemeMode(isDark ? ThemeMode.light : ThemeMode.dark);
+  },
+),
+IconButton(
+  icon: const Icon(Icons.logout),
+  onPressed: () => _confirmLogout(context, _authProvider),
+),
       ],
     ),
       body: SingleChildScrollView(

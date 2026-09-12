@@ -8,7 +8,7 @@ class AuthService {
 
   AuthService(this._apiClient);
 
-  Future<void> signup({
+  Future<Map<String, String>> signup({
     required String name,
     required String email,
     required String password,
@@ -30,9 +30,21 @@ class AuthService {
       );
     }
 
+    Map<String, dynamic> data;
+    try {
+      data = jsonDecode(response.body) as Map<String, dynamic>;
+    } catch (_) {
+      throw AuthException('Invalid response format from server.');
+    }
+
+    return({
+      "userId": data['UserID'].toString(),
+      "email": data['email'] as String,
+    });
+
   }
 
-  Future<String> login({
+  Future<Map<String, String>> login({
     required String email,
     required String password,
   }) async {
@@ -59,7 +71,13 @@ class AuthService {
     } catch (_) {
       throw AuthException('Invalid response format from server.');
     }
-    return _extractToken(data);
+     _extractToken(data);
+     return {
+      "token": _extractToken(data),
+      "userId": data['user']['id'].toString(),
+      "username": data['user']['name'] as String,
+      "email": data['user']['email'] as String,
+     };
   }
 
   Future<Map<String, String>> getUserDetails(String token) async {
