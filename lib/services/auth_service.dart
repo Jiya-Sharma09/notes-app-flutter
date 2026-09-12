@@ -8,7 +8,7 @@ class AuthService {
 
   AuthService(this._apiClient);
 
-  Future<Map<String, String>> signup({
+  Future<void> signup({
     required String name,
     required String email,
     required String password,
@@ -29,18 +29,6 @@ class AuthService {
         statusCode: response.statusCode,
       );
     }
-
-    Map<String, dynamic> data;
-    try {
-      data = jsonDecode(response.body) as Map<String, dynamic>;
-    } catch (_) {
-      throw AuthException('Invalid response format from server.');
-    }
-
-    return({
-      "userId": data['UserID'].toString(),
-      "email": data['email'] as String,
-    });
 
   }
 
