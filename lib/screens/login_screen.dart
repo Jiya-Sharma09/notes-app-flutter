@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:notes_app_flutter/screens/signup_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:notes_app_flutter/provider/auth-provider.dart';
+import 'package:notes_app_flutter/screens/otp_screen.dart';
+import 'package:notes_app_flutter/services/auth_service.dart';
+import 'package:notes_app_flutter/screens/home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -132,21 +135,46 @@ class _LoginScreenState extends State<LoginScreen> {
                                   if (_formKey.currentState!.validate()) {
                                     try {
                                       await authProvider.login(
-                                        email: _emailController.text,
+                                        email: _emailController.text.trim(),
                                         password: _passwordController.text,
                                       );
+                                      if (!mounted) return;
+
+                                      Navigator.pushAndRemoveUntil(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => const HomeScreen(),
+                                        ),
+                                        (route) => false,
+                                      );
                                     } catch (e) {
+                                      if (!mounted) return;
+
+                                      if (e is AuthException &&
+                                          e.code == 'EMAIL_NOT_VERIFIED' &&
+                                          e.userId != null) {
+                                        Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (_) => OtpScreen(
+                                              userId: e.userId as int,
+                                              email: _emailController.text
+                                                  .trim(),
+                                            ),
+                                          ),
+                                        );
+
+                                        return;
+                                      }
+
                                       ScaffoldMessenger.of(
                                         context,
                                       ).showSnackBar(
                                         SnackBar(
                                           content: Text('Login failed: $e'),
-                                          backgroundColor: Color.fromARGB(
-                                            255,
-                                            247,
-                                            21,
-                                            21,
-                                          ),
+                                          backgroundColor: Theme.of(
+                                            context,
+                                          ).colorScheme.error,
                                         ),
                                       );
                                     }
