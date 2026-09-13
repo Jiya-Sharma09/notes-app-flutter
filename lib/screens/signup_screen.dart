@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:notes_app_flutter/screens/login_screen.dart';
-import 'package:notes_app_flutter/services/auth_service.dart';
+import 'package:notes_app_flutter/screens/otp_screen.dart';
 import 'package:provider/provider.dart';
-import 'package:notes_app_flutter/services/api_client.dart';
+import 'package:notes_app_flutter/provider/auth-provider.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -16,8 +16,8 @@ class _SignupScreenState extends State<SignupScreen> {
   final _passwordController = TextEditingController();
   final _nameController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  bool isLoading = false;
-  bool _obscurePassword = true;
+
+   bool _obscurePassword = true;
 
   @override
   void dispose() {
@@ -29,7 +29,9 @@ class _SignupScreenState extends State<SignupScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final AuthService authService = AuthService(context.read<ApiClient>());
+    
+    final authProvider = context.watch<AuthProvider>();
+
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -48,15 +50,20 @@ class _SignupScreenState extends State<SignupScreen> {
                   child: Image.asset('assets/images/onboarding.png'),
                 ),
               ),
+
               const SizedBox(height: 28),
+
               Text(
                 'Sign up to continue',
                 textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                style: Theme.of(context)
+                    .textTheme
+                    .headlineSmall
+                    ?.copyWith(fontWeight: FontWeight.bold),
               ),
+
               const SizedBox(height: 16),
+
               FractionallySizedBox(
                 widthFactor: 0.9,
                 child: Form(
@@ -66,7 +73,9 @@ class _SignupScreenState extends State<SignupScreen> {
                     children: [
                       TextFormField(
                         controller: _nameController,
-                        decoration: const InputDecoration(labelText: 'Name'),
+                        decoration: const InputDecoration(
+                          labelText: 'Name',
+                        ),
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
                             return 'Please enter your name';
@@ -74,7 +83,9 @@ class _SignupScreenState extends State<SignupScreen> {
                           return null;
                         },
                       ),
+
                       const SizedBox(height: 16),
+
                       TextFormField(
                         controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
@@ -85,17 +96,22 @@ class _SignupScreenState extends State<SignupScreen> {
                           if (value == null || value.trim().isEmpty) {
                             return 'Please enter your email';
                           }
+
                           final emailRegex = RegExp(
                             r'^[^@\s]+@[^@\s]+\.[^@\s]+$',
                           );
+
                           if (!emailRegex.hasMatch(value.trim())) {
                             return 'Please enter a valid email';
                           }
+
                           return null;
                         },
                       ),
+
                       const SizedBox(height: 16),
-                                            TextFormField(
+
+                      TextFormField(
                         controller: _passwordController,
                         obscureText: _obscurePassword,
                         decoration: InputDecoration(
@@ -105,7 +121,9 @@ class _SignupScreenState extends State<SignupScreen> {
                               _obscurePassword
                                   ? Icons.visibility_off
                                   : Icons.visibility,
-                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant,
                             ),
                             onPressed: () {
                               setState(() {
@@ -121,74 +139,84 @@ class _SignupScreenState extends State<SignupScreen> {
                           return null;
                         },
                       ),
+
                       const SizedBox(height: 24),
 
-                      //______________________SIGN UP BUTTON_____________________________________
                       FractionallySizedBox(
                         widthFactor: 0.5,
                         alignment: Alignment.center,
                         child: ElevatedButton(
-                          onPressed: isLoading
+                          onPressed: authProvider.isLoading
                               ? null
                               : () async {
                                   if (_formKey.currentState!.validate()) {
                                     setState(() {
-                                      isLoading = true;
+                                      authProvider.isLoading = true;
                                     });
+
+                                    Map<String,dynamic> data;
+
                                     try {
-                                      await authService.signup(
-                                        name: _nameController.text,
-                                        email: _emailController.text,
-                                        password: _passwordController.text,
-                                      );
+                                      final email =
+                                          _emailController.text.trim();
 
-                                      // __________SUCCESSFUL SIGN-UP!__________
+                                      data =  await authProvider.signup(name: _nameController.text, email: _emailController.text, password: _passwordController.text);
 
-                                      if (mounted) {
-                                        setState(() {
-                                          isLoading = false;
-                                        });
+                                      if (!mounted) return;
 
-                                        Navigator.pushReplacement(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (_) => const LoginScreen(),
-                                          ),
-                                        );
-                                      }
-                                    } catch (e) {
-                                      ScaffoldMessenger.of(
+                                      setState(() {
+                                        authProvider.isLoading = false;
+                                      });
+
+                                      // Signup successful:
+                                      // Go to OTP verification screen.
+                                      Navigator.pushReplacement(
                                         context,
-                                      ).showSnackBar(
-                                        SnackBar(
-                                          content: Text('Sign up failed: $e'),
-                                          backgroundColor: Theme.of(
-                                            context,
-                                          ).colorScheme.error,
+                                        MaterialPageRoute(
+                                          builder: (_) => OtpScreen(
+                                            userId: data['userId'] as int,
+                                            email: email,
+                                          ),
                                         ),
                                       );
+                                    } catch (e) {
+                                      if (!mounted) return;
+
                                       setState(() {
-                                        isLoading = false;
+                                        authProvider.isLoading = false;
                                       });
+
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                          content:
+                                              Text('Sign up failed: $e'),
+                                          backgroundColor: Theme.of(context)
+                                              .colorScheme
+                                              .error,
+                                        ),
+                                      );
                                     }
                                   } else {
                                     setState(() {
-                                      isLoading = false;
+                                      authProvider.isLoading = false;
                                     });
-                                    ScaffoldMessenger.of(context).showSnackBar(
+
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(
                                       SnackBar(
                                         content: const Text(
                                           'Please fill in all fields',
                                         ),
-                                        backgroundColor: Theme.of(
-                                          context,
-                                        ).colorScheme.error,
+                                        backgroundColor: Theme.of(context)
+                                            .colorScheme
+                                            .error,
                                       ),
                                     );
                                   }
                                 },
-                          child: isLoading
-                              ? SizedBox(
+                          child: authProvider.isLoading
+                              ? const SizedBox(
                                   height: 20,
                                   width: 20,
                                   child: CircularProgressIndicator(),
@@ -200,7 +228,9 @@ class _SignupScreenState extends State<SignupScreen> {
                   ),
                 ),
               ),
+
               const SizedBox(height: 16),
+
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -209,7 +239,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                   TextButton(
-                    onPressed: isLoading
+                    onPressed: authProvider.isLoading
                         ? null
                         : () {
                             Navigator.pushReplacement(
@@ -220,12 +250,14 @@ class _SignupScreenState extends State<SignupScreen> {
                             );
                           },
                     child: Text(
-                            'Login',
-                            style: Theme.of(context).textTheme.bodyMedium
-                                ?.copyWith(
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
+                      'Login',
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyMedium
+                          ?.copyWith(
+                            color: Theme.of(context).colorScheme.primary,
                           ),
+                    ),
                   ),
                 ],
               ),

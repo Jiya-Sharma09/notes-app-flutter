@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:notes_app_flutter/provider/auth-provider.dart';
 import 'package:notes_app_flutter/screens/otp_screen.dart';
 import 'package:notes_app_flutter/services/auth_service.dart';
+import 'package:notes_app_flutter/screens/home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -137,6 +138,15 @@ class _LoginScreenState extends State<LoginScreen> {
                                         email: _emailController.text.trim(),
                                         password: _passwordController.text,
                                       );
+                                      if (!mounted) return;
+
+                                      Navigator.pushAndRemoveUntil(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => const HomeScreen(),
+                                        ),
+                                        (route) => false,
+                                      );
                                     } catch (e) {
                                       if (!mounted) return;
 
@@ -147,7 +157,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                           context,
                                           MaterialPageRoute(
                                             builder: (_) => OtpScreen(
-                                              userId: e.userId.toString(),
+                                              userId: e.userId as int,
                                               email: _emailController.text
                                                   .trim(),
                                             ),

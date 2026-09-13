@@ -7,7 +7,7 @@ import 'package:notes_app_flutter/services/auth_service.dart';
 import 'package:notes_app_flutter/screens/login_screen.dart';
 
 class OtpScreen extends StatefulWidget {
-  final String userId;
+  final int userId;
   final String email;
 
   const OtpScreen({
@@ -43,28 +43,29 @@ class _OtpScreenState extends State<OtpScreen> {
   void _startCooldown() {
     _timer?.cancel();
 
-    setState(() {
-      _secondsRemaining = 60;
-    });
+    _secondsRemaining = 60;
 
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (!mounted) {
-        timer.cancel();
-        return;
-      }
+    _timer = Timer.periodic(
+      const Duration(seconds: 1),
+      (timer) {
+        if (!mounted) {
+          timer.cancel();
+          return;
+        }
 
-      if (_secondsRemaining <= 1) {
-        timer.cancel();
+        if (_secondsRemaining <= 1) {
+          timer.cancel();
 
-        setState(() {
-          _secondsRemaining = 0;
-        });
-      } else {
-        setState(() {
-          _secondsRemaining--;
-        });
-      }
-    });
+          setState(() {
+            _secondsRemaining = 0;
+          });
+        } else {
+          setState(() {
+            _secondsRemaining--;
+          });
+        }
+      },
+    );
   }
 
   Future<void> _verifyOtp() async {
@@ -298,10 +299,10 @@ class _OtpScreenState extends State<OtpScreen> {
                     const SizedBox(height: 16),
 
                     TextButton(
-                      onPressed: authProvider.isLoading ||
-                              _secondsRemaining > 0
-                          ? null
-                          : _resendOtp,
+                      onPressed:
+                          authProvider.isLoading || _secondsRemaining > 0
+                              ? null
+                              : _resendOtp,
                       child: Text(
                         _secondsRemaining > 0
                             ? 'Resend OTP in ${_secondsRemaining}s'
@@ -335,4 +336,3 @@ class _OtpScreenState extends State<OtpScreen> {
     );
   }
 }
-
