@@ -9,6 +9,7 @@ import 'package:notes_app_flutter/screens/add_notes.dart';
 import 'package:notes_app_flutter/screens/search_notes_screen.dart';
 import 'package:notes_app_flutter/screens/read_screen.dart';
 import 'package:notes_app_flutter/provider/theme_provider.dart';
+import 'package:notes_app_flutter/screens/workspace_chatbot.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -173,6 +174,19 @@ IconButton(
                         });
                       },
                     ),
+
+                    ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const WorkspaceChatScreen(),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.auto_awesome),
+                label: const Text('Workspace AI'),
+              )
             ],
           ),
         ),
