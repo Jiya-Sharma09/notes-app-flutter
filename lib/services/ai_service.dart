@@ -19,6 +19,16 @@ class RevisionQuestion {
   RevisionQuestion({required this.question, required this.answer});
 }
 
+class ChatResponse {
+  final String answer;
+  final List<dynamic> sources;
+
+  ChatResponse({
+    required this.answer,
+    required this.sources,
+  });
+}
+
 class AiService {
   final ApiClient apiClient;
 
