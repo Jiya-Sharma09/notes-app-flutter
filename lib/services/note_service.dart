@@ -3,7 +3,6 @@ import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'package:notes_app_flutter/models/note.dart';
 import 'package:notes_app_flutter/services/api_client.dart';
-import 'package:flutter/foundation.dart';
 
 class NoteService {
   final ApiClient _apiClient;

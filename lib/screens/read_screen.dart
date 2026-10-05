@@ -6,6 +6,7 @@ import 'package:notes_app_flutter/screens/edit_screen.dart';
 import 'package:notes_app_flutter/screens/summary_screen.dart';
 import 'package:notes_app_flutter/screens/rev_questions_screen.dart';
 import 'package:notes_app_flutter/provider/auth-provider.dart';
+import 'package:notes_app_flutter/screens/one_note_chatbot.dart';
 
 class ReadScreen extends StatelessWidget {
   final int noteId;
@@ -182,6 +183,22 @@ class ReadScreen extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
           child: Row(
             children: [
+             Expanded(
+                child: _ActionChip(
+                  icon: Icons.chat_bubble_outline,
+                  label: 'Ask AI',
+                  color: Colors.deepPurple,
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => NoteChatScreen(noteId: noteId),
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(width: 10), 
+              
               Expanded(
                 child: _ActionChip(
                   icon: Icons.auto_awesome,
