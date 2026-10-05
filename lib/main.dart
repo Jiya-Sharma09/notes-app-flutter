@@ -15,7 +15,7 @@ void main() async {
         ChangeNotifierProvider(
           create: (context) => ThemeProvider()..loadThemeMode(),
         ),
-        Provider(create: (context) => ApiClient(baseUrl: "http://10.0.2.2:3000")),
+        Provider(create: (context) => ApiClient(baseUrl: "http://10.0.2.2:5000")),
         ChangeNotifierProvider(
           create: (context) => AuthProvider(context.read<ApiClient>()),
         ),
@@ -23,7 +23,7 @@ void main() async {
           create: (context) => NotesProvider(context.read<ApiClient>()),
         ),
          Provider<AiService>(
-      create: (_) => AiService(apiClient: ApiClient(baseUrl: 'http://10.0.2.2:3000')),
+      create: (_) => AiService(apiClient: ApiClient(baseUrl: 'http://10.0.2.2:5000')),
     ),
       ],
       child: MyApp(),
