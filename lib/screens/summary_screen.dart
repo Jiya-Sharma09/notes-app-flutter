@@ -36,7 +36,8 @@ class _SummaryScreenState extends State<SummaryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Summary'),),
+      appBar: AppBar(title: Text('Summary'),
+      backgroundColor: Theme.of(context).primaryColor,),
       body: FutureBuilder<List<String>>(
         future: _summaryFuture,
         builder: (context, snapshot) {

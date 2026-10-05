@@ -60,6 +60,7 @@ class ReadScreen extends StatelessWidget {
         title: const Text('Read Note'),
         centerTitle: false,
         elevation: 0,
+        backgroundColor: Theme.of(context).primaryColor,
         actions: [
           PopupMenuButton<String>(
             icon: const Icon(Icons.more_vert),
