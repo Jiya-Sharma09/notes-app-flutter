@@ -7,7 +7,6 @@ import 'package:notes_app_flutter/widget/note_tile.dart';
 import 'package:notes_app_flutter/widget/note_banner.dart';
 import 'package:notes_app_flutter/screens/add_notes.dart';
 import 'package:notes_app_flutter/screens/search_notes_screen.dart';
-import 'package:notes_app_flutter/services/auth_service.dart';
 import 'package:notes_app_flutter/screens/read_screen.dart';
 import 'package:notes_app_flutter/provider/theme_provider.dart';
 
