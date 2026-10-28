@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:notes_app_flutter/models/chat_message.dart';
 import 'package:notes_app_flutter/provider/auth-provider.dart';
 import 'package:notes_app_flutter/services/ai_service.dart';
@@ -35,11 +35,9 @@ class _WorkspaceChatScreenState extends State<WorkspaceChatScreen> {
     final token = context.read<AuthProvider>().token;
 
     if (token == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please log in again.'),
-        ),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Please log in again.')));
       return;
     }
 
@@ -48,12 +46,7 @@ class _WorkspaceChatScreenState extends State<WorkspaceChatScreen> {
     final previousHistory = List<ChatMessage>.from(_messages);
 
     setState(() {
-      _messages.add(
-        ChatMessage(
-          role: 'user',
-          content: question,
-        ),
-      );
+      _messages.add(ChatMessage(role: 'user', content: question));
 
       _controller.clear();
       _isLoading = true;
@@ -73,23 +66,16 @@ class _WorkspaceChatScreenState extends State<WorkspaceChatScreen> {
       if (!mounted) return;
 
       setState(() {
-        _messages.add(
-          ChatMessage(
-            role: 'assistant',
-            content: response.answer,
-          ),
-        );
+        _messages.add(ChatMessage(role: 'assistant', content: response.answer));
       });
 
       _scrollToBottom();
     } catch (e) {
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e.toString()),
-        ),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.toString())));
     } finally {
       if (mounted) {
         setState(() {
@@ -115,23 +101,13 @@ class _WorkspaceChatScreenState extends State<WorkspaceChatScreen> {
     final isUser = message.role == 'user';
 
     return Align(
-      alignment:
-          isUser ? Alignment.centerRight : Alignment.centerLeft,
+      alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
-        constraints: const BoxConstraints(
-          maxWidth: 320,
-        ),
-        margin: const EdgeInsets.only(
-          bottom: 12,
-        ),
-        padding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 12,
-        ),
+        constraints: const BoxConstraints(maxWidth: 320),
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: isUser
-              ? Colors.deepPurple
-              : Colors.grey.shade200,
+          color: isUser ? Colors.deepPurple : Colors.grey.shade200,
           borderRadius: BorderRadius.only(
             topLeft: const Radius.circular(18),
             topRight: const Radius.circular(18),
@@ -139,12 +115,33 @@ class _WorkspaceChatScreenState extends State<WorkspaceChatScreen> {
             bottomRight: Radius.circular(isUser ? 4 : 18),
           ),
         ),
-        child: Text(
-          message.content,
-          style: TextStyle(
-            color: isUser ? Colors.white : Colors.black87,
-            fontSize: 15,
-            height: 1.4,
+        child: MarkdownBody(
+          data: message.content,
+          styleSheet: MarkdownStyleSheet(
+            p: TextStyle(
+              color: isUser ? Colors.white : Colors.black87,
+              fontSize: 15,
+              height: 1.4,
+            ),
+            h1: TextStyle(
+              color: isUser ? Colors.white : Colors.black87,
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+            ),
+            h2: TextStyle(
+              color: isUser ? Colors.white : Colors.black87,
+              fontSize: 19,
+              fontWeight: FontWeight.bold,
+            ),
+            h3: TextStyle(
+              color: isUser ? Colors.white : Colors.black87,
+              fontSize: 17,
+              fontWeight: FontWeight.bold,
+            ),
+            strong: TextStyle(
+              color: isUser ? Colors.white : Colors.black87,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
       ),
@@ -156,10 +153,7 @@ class _WorkspaceChatScreenState extends State<WorkspaceChatScreen> {
       alignment: Alignment.centerLeft,
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 14,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
           color: Colors.grey.shade200,
           borderRadius: const BorderRadius.only(
@@ -172,11 +166,7 @@ class _WorkspaceChatScreenState extends State<WorkspaceChatScreen> {
         child: const SizedBox(
           width: 35,
           height: 20,
-          child: Center(
-            child: CircularProgressIndicator(
-              strokeWidth: 2,
-            ),
-          ),
+          child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
         ),
       ),
     );
@@ -188,10 +178,7 @@ class _WorkspaceChatScreenState extends State<WorkspaceChatScreen> {
       appBar: AppBar(
         title: const Row(
           children: [
-            Icon(
-              Icons.auto_awesome,
-              size: 22,
-            ),
+            Icon(Icons.auto_awesome, size: 22),
             SizedBox(width: 8),
             Text('Workspace AI'),
           ],
@@ -206,17 +193,13 @@ class _WorkspaceChatScreenState extends State<WorkspaceChatScreen> {
                 : ListView.builder(
                     controller: _scrollController,
                     padding: const EdgeInsets.all(16),
-                    itemCount:
-                        _messages.length +
-                        (_isLoading ? 1 : 0),
+                    itemCount: _messages.length + (_isLoading ? 1 : 0),
                     itemBuilder: (context, index) {
                       if (index == _messages.length) {
                         return _buildLoadingMessage();
                       }
 
-                      return _buildMessage(
-                        _messages[index],
-                      );
+                      return _buildMessage(_messages[index]);
                     },
                   ),
           ),
@@ -244,10 +227,7 @@ class _WorkspaceChatScreenState extends State<WorkspaceChatScreen> {
 
             const Text(
               'Ask your Workspace AI',
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
 
             const SizedBox(height: 10),
@@ -255,10 +235,7 @@ class _WorkspaceChatScreenState extends State<WorkspaceChatScreen> {
             Text(
               'Ask questions across all your notes.',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 15,
-                color: Colors.grey.shade600,
-              ),
+              style: TextStyle(fontSize: 15, color: Colors.grey.shade600),
             ),
 
             const SizedBox(height: 20),
@@ -284,12 +261,7 @@ class _WorkspaceChatScreenState extends State<WorkspaceChatScreen> {
   Widget _buildInputArea() {
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          12,
-          8,
-          12,
-          12,
-        ),
+        padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
@@ -324,13 +296,8 @@ class _WorkspaceChatScreenState extends State<WorkspaceChatScreen> {
                 shape: BoxShape.circle,
               ),
               child: IconButton(
-                onPressed: _isLoading
-                    ? null
-                    : _sendMessage,
-                icon: const Icon(
-                  Icons.send,
-                  color: Colors.white,
-                ),
+                onPressed: _isLoading ? null : _sendMessage,
+                icon: const Icon(Icons.send, color: Colors.white),
               ),
             ),
           ],

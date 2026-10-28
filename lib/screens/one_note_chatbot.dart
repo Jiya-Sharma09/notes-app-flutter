@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:notes_app_flutter/models/chat_message.dart';
 import 'package:notes_app_flutter/provider/auth-provider.dart';
 import 'package:notes_app_flutter/services/ai_service.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 
 class NoteChatScreen extends StatefulWidget {
   final int noteId;
@@ -148,14 +149,43 @@ class _NoteChatScreenState extends State<NoteChatScreen> {
                                     .surfaceContainerHighest,
                             borderRadius: BorderRadius.circular(16),
                           ),
-                          child: Text(
-                            message.content,
-                            style: TextStyle(
-                              color: isUser
-                                  ? Colors.white
-                                  : Theme.of(context)
-                                      .colorScheme
-                                      .onSurface,
+                          child: MarkdownBody(
+                            data: message.content,
+                            styleSheet: MarkdownStyleSheet(
+                              p: TextStyle(
+                                color: isUser
+                                    ? Colors.white
+                                    : Theme.of(context).colorScheme.onSurface,
+                                fontSize: 15,
+                                height: 1.4,
+                              ),
+                              h1: TextStyle(
+                                color: isUser
+                                    ? Colors.white
+                                    : Theme.of(context).colorScheme.onSurface,
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              h2: TextStyle(
+                                color: isUser
+                                    ? Colors.white
+                                    : Theme.of(context).colorScheme.onSurface,
+                                fontSize: 19,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              h3: TextStyle(
+                                color: isUser
+                                    ? Colors.white
+                                    : Theme.of(context).colorScheme.onSurface,
+                                fontSize: 17,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              strong: TextStyle(
+                                color: isUser
+                                    ? Colors.white
+                                    : Theme.of(context).colorScheme.onSurface,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ),

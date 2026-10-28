@@ -54,6 +54,7 @@ class AuthService {
         }),
       );
     } catch (e) {
+      print('LOGIN NETWORK ERROR: $e');
       throw AuthException('Failed to connect to the server');
     }
 
